@@ -57,6 +57,7 @@ function main(userName) {
                 "View all departments",
                 "Add a department",
                 "Add a role",
+                "Add an employee",
                 "Quit",
             ],
             name: "choice",
@@ -72,6 +73,8 @@ function main(userName) {
                 newDept();
             } else if (answers.choice === "Add a role") {
                 newRole();
+            } else if (answers.choice === "Add an employee") {
+                newEmp();
             } else if (answers.choice === "Quit") {
                 connection.end();
             } else {
@@ -132,6 +135,7 @@ function newDept() {
         });
 }
 
+//◙◙◙◙◙◙◙function to grab all departments to display as choices when adding a role
 function newRole() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
@@ -174,7 +178,6 @@ function newRoleQ(burrito) {
 }
 
 //◙◙◙◙◙◙◙function to add roles
-
 function addRole(title, salary, dept) {
     connection.query(
         `INSERT INTO role (title, salary, department_name) values ('${title}', '${salary}', '${dept}');`,
@@ -184,6 +187,82 @@ function addRole(title, salary, dept) {
     );
     main();
 }
+
+
+
+
+//◙◙◙◙◙◙◙function to grab all roles to display as choices when adding an employee
+function newEmp() {
+    connection.query("SELECT * FROM role", function(err, res1) {
+        if (err) throw err;
+
+        connection.query("SELECT * FROM employee WHERE empRole='Manager'", function(err, res2) {
+            if (err) throw err;
+
+            newEmpQ(res1, res2);
+        });
+    });
+}
+
+//◙◙◙◙◙◙◙question for adding new employee
+function newEmpQ(burrito1, burrito2) {
+    console.log(burrito1);
+    inquirer
+        .prompt([{
+                type: "prompt",
+                message: "What is this employees first name?",
+                name: "firstName",
+            },
+            {
+                type: "prompt",
+                message: "What is this employees last name?",
+                name: "lastName",
+            },
+            {
+                type: "list",
+                message: "What role does this employee have?",
+                name: "role",
+                choices: burrito1,
+            },
+            {
+                type: "list",
+                message: "Who is this employees manager?",
+                name: "manager",
+                choices: burrito2,
+            },
+        ])
+        .then((answers) => {
+            console.log(answers);
+            let x = Object.values(answers);
+            let fName = x[0];
+            let lName = x[1];
+            let role = x[2];
+            let manager = x[3];
+            console.log(fName);
+            console.log(lName);
+            console.log(role);
+            console.log(manager);
+            addEmp(fName, lName, role, manager)
+        });
+}
+
+//◙◙◙◙◙◙◙function to add employee
+function addEmp(fName, lName, role, manager) {
+    connection.query(
+        `INSERT INTO employee (first_name, last_name, empRole, manager_name) values ('${fName}', '${lName}', '${role}', '${manager}');`,
+        function(err, res) {
+            if (err) throw err;
+        }
+    );
+    main();
+}
+
+
+
+
+
+
+
 
 welcome();
 
@@ -203,6 +282,9 @@ welcome();
 
 //   * Update employee roles
 
+
+//old code...
+
 // //function to add departments
 // function addDept(dept) {
 //     connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
@@ -215,5 +297,3 @@ welcome();
 //         main();
 //     });
 // }
-
-//old code...
