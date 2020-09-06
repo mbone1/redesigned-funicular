@@ -5,6 +5,7 @@ const consoletable = require("console.table");
 const chalk = require("chalk");
 // const func = require("./func.js")
 
+
 //setting up mysql server
 var connection = mysql.createConnection({
     host: "localhost",
@@ -23,9 +24,8 @@ var connection = mysql.createConnection({
 //initial connection to server
 connection.connect(function(err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-    console.log(chalk.red('HELLO'));
-    welcome();
+    // console.log("connected as id " + connection.threadId);
+
 });
 
 
@@ -40,6 +40,7 @@ function welcome() {
         .then(answers => {
             console.info('Welcome', answers.name, '!');
             main(answers.name);
+
         });
 }
 
@@ -50,27 +51,29 @@ function main(userName) {
         .prompt([{
             type: 'list',
             message: 'what would you like to do ' + userName + '?',
-            choices: ['View all employees', 'View all roles', 'View all departments', 'Add a department', 'Quit'],
+            choices: ['View all employees', 'View all roles', 'View all departments', 'Add a department', 'Add a role', 'Quit'],
             name: 'choice',
         }, ])
         .then(answers => {
-            console.info('Answer:', answers.choice);
             if (answers.choice === 'View all employees') {
                 viewAllEmp();
-                main(userName);
 
             } else if (answers.choice === 'View all departments') {
                 viewAllDep();
-                main(userName);
 
             } else if (answers.choice === 'View all roles') {
                 viewAllRoles();
-                main(userName);
+
             } else if (answers.choice === 'Add a department') {
                 newDept();
-                main(userName);
+
+            } else if (answers.choice === 'Add a role') {
+                newRole();
+
+            } else if (answers.choice === 'Quit') {
+                connection.end();
             } else {
-                console.log("If you did not select quit, there is an error!")
+                // console.log("If you did not select quit, there is an error!")
                 connection.end();
             }
         });
@@ -86,24 +89,16 @@ function viewAllEmp() {
     connection.query("SELECT * FROM employee", function(err, res) {
         if (err) throw err;
         console.table(res);
-        console.log("__________________________________________________________________________")
-        console.log("________press an arrow key to bring the menu back up______________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
+        main();
     });
 }
 
-//function to view all departments
+// function to view all departments
 function viewAllDep() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
         console.table(res);
-        console.log("__________________________________________________________________________")
-        console.log("________press an arrow key to bring the menu back up______________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
+        main();
     });
 }
 
@@ -112,31 +107,45 @@ function viewAllRoles() {
     connection.query("SELECT * FROM role", function(err, res) {
         if (err) throw err;
         console.table(res);
-        console.log("__________________________________________________________________________")
-        console.log("________press an arrow key to bring the menu back up______________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
+        main();
     });
 }
 
 //add functions
 
-function addDept(dept) {
-    connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
-        if (err) throw err;
-        console.table(res);
-        console.log("__________________________________________________________________________")
-        console.log("________press an arrow key to bring the menu back up______________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
-        console.log("__________________________________________________________________________")
+// //function to add departments
+// function addDept(dept) {
+//     connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
+//         if (err) throw err;
+//         console.log("__________________________________________________________________________")
+//         console.log("________press an arrow key to bring the menu back up______________________")
+//         console.log("__________________________________________________________________________")
+//         console.log("__________________________________________________________________________")
+//         console.log("__________________________________________________________________________")
+//         main();
+//     });
+// }
 
-    });
+// function to add roles
+
+function addRole(role) {
+    console.log(role)
+        // connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
+        //     if (err) throw err;
+        //     console.log("__________________________________________________________________________")
+        //     console.log("________press an arrow key to bring the menu back up______________________")
+        //     console.log("__________________________________________________________________________")
+        //     console.log("__________________________________________________________________________")
+        //     console.log("__________________________________________________________________________")
+
+    // });
+    main();
 }
 
-//secondary questions
 
+//secondary question functions
+
+//question for adding new department
 function newDept() {
     inquirer
         .prompt([{
@@ -145,14 +154,49 @@ function newDept() {
             name: 'deptName',
         }, ])
         .then(answers => {
-            console.info('Welcome', answers.deptName, '!');
-            addDept(answers.deptName);
-            main();
+            connection.query(`INSERT INTO department (name) values ('${answers.deptName}');`, function(err, res) {
+                if (err) throw err;
+                // console.log("________press an arrow key to bring the menu back up______________________")
+                main();
+            });
         });
 
 }
 
+function newRole() {
+    connection.query("SELECT name FROM department", function(err, res) {
+        if (err) throw err;
+        newRoleQ(res)
+    })
+};
 
+// question for adding new role
+function newRoleQ(burrito) {
+    console.table(burrito)
+    inquirer
+        .prompt([{
+                type: 'prompt',
+                message: 'What is the name of the role you want to add?',
+                name: 'roleName',
+            }, {
+                type: 'prompt',
+                message: 'What is the salary for this role (gross)?',
+                name: 'roleSalary',
+            },
+            {
+                type: 'list',
+                message: 'What department is this role in?',
+                name: 'roleName',
+                choices: burrito,
+            },
+        ])
+        .then(answers => {
+            let x = Object.values(answers);
+            addRole(x);
+        });
+}
+
+welcome();
 
 
 //   * Add departments, roles, employees
