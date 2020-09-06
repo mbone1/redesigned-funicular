@@ -1,10 +1,14 @@
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮛ ⮙ ⮘
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮛
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮙
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮘
+
 const fs = require("fs");
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const consoletable = require("console.table");
 const chalk = require("chalk");
 // const func = require("./func.js")
-
 
 //setting up mysql server
 var connection = mysql.createConnection({
@@ -18,59 +22,57 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "root",
-    database: "db"
+    database: "db",
 });
 
-//initial connection to server
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙initial connection to server
 connection.connect(function(err) {
     if (err) throw err;
     // console.log("connected as id " + connection.threadId);
-
 });
 
-
-//welcome function, stores user's name and passes on to main function
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙welcome function, stores user's name and passes on to main function
 function welcome() {
     inquirer
         .prompt([{
-            type: 'prompt',
-            message: 'Hello! Welcome to the employee database... Please enter your name',
-            name: 'name',
+            type: "prompt",
+            message: "Hello! Welcome to the employee database... Please enter your name",
+            name: "name",
         }, ])
-        .then(answers => {
-            console.info('Welcome', answers.name, '!');
+        .then((answers) => {
+            console.info("Welcome", answers.name, "!");
             main(answers.name);
-
         });
 }
 
-//main tree of questions
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙main tree of questions
 function main(userName) {
-
     inquirer
         .prompt([{
-            type: 'list',
-            message: 'what would you like to do ' + userName + '?',
-            choices: ['View all employees', 'View all roles', 'View all departments', 'Add a department', 'Add a role', 'Quit'],
-            name: 'choice',
+            type: "list",
+            message: "what would you like to do " + userName + "?",
+            choices: [
+                "View all employees",
+                "View all roles",
+                "View all departments",
+                "Add a department",
+                "Add a role",
+                "Quit",
+            ],
+            name: "choice",
         }, ])
-        .then(answers => {
-            if (answers.choice === 'View all employees') {
+        .then((answers) => {
+            if (answers.choice === "View all employees") {
                 viewAllEmp();
-
-            } else if (answers.choice === 'View all departments') {
+            } else if (answers.choice === "View all departments") {
                 viewAllDep();
-
-            } else if (answers.choice === 'View all roles') {
+            } else if (answers.choice === "View all roles") {
                 viewAllRoles();
-
-            } else if (answers.choice === 'Add a department') {
+            } else if (answers.choice === "Add a department") {
                 newDept();
-
-            } else if (answers.choice === 'Add a role') {
+            } else if (answers.choice === "Add a role") {
                 newRole();
-
-            } else if (answers.choice === 'Quit') {
+            } else if (answers.choice === "Quit") {
                 connection.end();
             } else {
                 // console.log("If you did not select quit, there is an error!")
@@ -78,13 +80,11 @@ function main(userName) {
             }
         });
 }
-
-
 //functions for each query will start here...
 
-//view functions
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙view functions
 
-//function to view all employees
+//◙◙◙◙◙◙◙function to view all employees
 function viewAllEmp() {
     connection.query("SELECT * FROM employee", function(err, res) {
         if (err) throw err;
@@ -93,7 +93,7 @@ function viewAllEmp() {
     });
 }
 
-// function to view all departments
+//◙◙◙◙◙◙◙function to view all departments
 function viewAllDep() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
@@ -102,7 +102,7 @@ function viewAllDep() {
     });
 }
 
-//function to view all roles
+//◙◙◙◙◙◙◙function to view all roles
 function viewAllRoles() {
     connection.query("SELECT * FROM role", function(err, res) {
         if (err) throw err;
@@ -111,93 +111,81 @@ function viewAllRoles() {
     });
 }
 
-//add functions
-
-// //function to add departments
-// function addDept(dept) {
-//     connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
-//         if (err) throw err;
-//         console.log("__________________________________________________________________________")
-//         console.log("________press an arrow key to bring the menu back up______________________")
-//         console.log("__________________________________________________________________________")
-//         console.log("__________________________________________________________________________")
-//         console.log("__________________________________________________________________________")
-//         main();
-//     });
-// }
-
-// function to add roles
-
-function addRole(role) {
-    console.log(role)
-        // connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
-        //     if (err) throw err;
-        //     console.log("__________________________________________________________________________")
-        //     console.log("________press an arrow key to bring the menu back up______________________")
-        //     console.log("__________________________________________________________________________")
-        //     console.log("__________________________________________________________________________")
-        //     console.log("__________________________________________________________________________")
-
-    // });
-    main();
-}
-
-
-//secondary question functions
-
-//question for adding new department
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙add functions
+//◙◙◙◙◙◙◙question for adding new department
 function newDept() {
     inquirer
         .prompt([{
-            type: 'prompt',
-            message: 'What is the name of the department you want to add?',
-            name: 'deptName',
+            type: "prompt",
+            message: "What is the name of the department you want to add?",
+            name: "deptName",
         }, ])
-        .then(answers => {
-            connection.query(`INSERT INTO department (name) values ('${answers.deptName}');`, function(err, res) {
-                if (err) throw err;
-                // console.log("________press an arrow key to bring the menu back up______________________")
-                main();
-            });
+        .then((answers) => {
+            connection.query(
+                `INSERT INTO department (name) values ('${answers.deptName}');`,
+                function(err, res) {
+                    if (err) throw err;
+                    // console.log("________press an arrow key to bring the menu back up______________________")
+                    main();
+                }
+            );
         });
-
 }
 
 function newRole() {
-    connection.query("SELECT name FROM department", function(err, res) {
+    connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
-        newRoleQ(res)
-    })
-};
+        newRoleQ(res);
+    });
+}
 
-// question for adding new role
+//◙◙◙◙◙◙◙question for adding new role
 function newRoleQ(burrito) {
-    console.table(burrito)
+    console.log(burrito);
     inquirer
         .prompt([{
-                type: 'prompt',
-                message: 'What is the name of the role you want to add?',
-                name: 'roleName',
-            }, {
-                type: 'prompt',
-                message: 'What is the salary for this role (gross)?',
-                name: 'roleSalary',
-            },
-            {
-                type: 'list',
-                message: 'What department is this role in?',
-                name: 'roleName',
+                type: "list",
+                message: "What department is this role in?",
+                name: "roleDept",
                 choices: burrito,
             },
+            {
+                type: "prompt",
+                message: "What is the name of this role?",
+                name: "roleName",
+            },
+            {
+                type: "prompt",
+                message: "What is the salary for this role (gross)?",
+                name: "roleSalary",
+            },
         ])
-        .then(answers => {
+        .then((answers) => {
+            console.log(answers);
             let x = Object.values(answers);
-            addRole(x);
+            let title = x[1];
+            let salary = x[2];
+            let dept = x[0];
+            console.log(dept);
+            console.log(title);
+            console.log(salary);
+            addRole(title, salary, dept);
         });
 }
 
-welcome();
+//◙◙◙◙◙◙◙function to add roles
 
+function addRole(title, salary, dept) {
+    connection.query(
+        `INSERT INTO role (title, salary, department_name) values ('${title}', '${salary}', '${dept}');`,
+        function(err, res) {
+            if (err) throw err;
+        }
+    );
+    main();
+}
+
+welcome();
 
 //   * Add departments, roles, employees
 
@@ -213,5 +201,19 @@ welcome();
 
 // INSERT INTO employee (first_name, last_name) values ('Dingus', 'Jones');
 
-
 //   * Update employee roles
+
+// //function to add departments
+// function addDept(dept) {
+//     connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
+//         if (err) throw err;
+//         console.log("__________________________________________________________________________")
+//         console.log("________press an arrow key to bring the menu back up______________________")
+//         console.log("__________________________________________________________________________")
+//         console.log("__________________________________________________________________________")
+//         console.log("__________________________________________________________________________")
+//         main();
+//     });
+// }
+
+//old code...
