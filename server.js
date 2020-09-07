@@ -58,6 +58,7 @@ function main(userName) {
                 "Add a department",
                 "Add a role",
                 "Add an employee",
+                "Update an Employees role",
                 "Quit",
             ],
             name: "choice",
@@ -75,6 +76,8 @@ function main(userName) {
                 newRole();
             } else if (answers.choice === "Add an employee") {
                 newEmp();
+            } else if (answers.choice === "Update an Employees role") {
+                upEmp();
             } else if (answers.choice === "Quit") {
                 connection.end();
             } else {
@@ -101,7 +104,7 @@ function viewAllDep() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
         console.table(res);
-        main();
+        main(userName);
     });
 }
 
@@ -110,7 +113,7 @@ function viewAllRoles() {
     connection.query("SELECT * FROM role", function(err, res) {
         if (err) throw err;
         console.table(res);
-        main();
+        main(userName);
     });
 }
 
@@ -188,19 +191,19 @@ function addRole(title, salary, dept) {
     main();
 }
 
-
-
-
-//◙◙◙◙◙◙◙function to grab all roles to display as choices when adding an employee
+//◙◙◙◙◙◙◙function to grab all roles to display as choices when adding an employee and also grab managers
 function newEmp() {
     connection.query("SELECT * FROM role", function(err, res1) {
         if (err) throw err;
 
-        connection.query("SELECT * FROM employee WHERE empRole='Manager'", function(err, res2) {
-            if (err) throw err;
+        connection.query(
+            "SELECT * FROM employee WHERE empRole='Manager'",
+            function(err, res2) {
+                if (err) throw err;
 
-            newEmpQ(res1, res2);
-        });
+                newEmpQ(res1, res2);
+            }
+        );
     });
 }
 
@@ -242,7 +245,7 @@ function newEmpQ(burrito1, burrito2) {
             console.log(lName);
             console.log(role);
             console.log(manager);
-            addEmp(fName, lName, role, manager)
+            addEmp(fName, lName, role, manager);
         });
 }
 
@@ -259,9 +262,64 @@ function addEmp(fName, lName, role, manager) {
 
 
 
+//◙◙◙◙◙◙◙
+function upEmp() {
+    connection.query("SELECT * FROM role", function(err, res1) {
+        if (err) throw err;
 
+        connection.query(
+            "SELECT first_name last_name FROM employee",
+            function(err, res2) {
+                if (err) throw err;
+                console.log(res2)
+                updEmpQ(res1, res2);
+            }
+        );
+    });
+}
 
+//◙◙◙◙◙◙◙question for updating employee roles
+function updEmpQ(burrito1, burrito2) {
+    console.log(burrito1);
+    inquirer
+        .prompt([{
+                type: "list",
+                message: "Which employee would you like to update?",
+                name: "update",
+                choices: burrito2,
+            },
+            {
+                type: "list",
+                message: "What role are they changing to?",
+                name: "role",
+                choices: burrito1,
+            },
+        ])
+        .then((answers) => {
+            console.log(answers);
+            // let x = Object.values(answers);
+            // let fName = x[0];
+            // let lName = x[1];
+            // let role = x[2];
+            // let manager = x[3];
+            // console.log(fName);
+            // console.log(lName);
+            // console.log(role);
+            // console.log(manager);
+            // updEmp(fName, lName, role, manager);
+        });
+}
 
+//◙◙◙◙◙◙◙function to update employees
+function updEmp(fName, lName, role, manager) {
+    connection.query(
+        `INSERT INTO employee (first_name, last_name, empRole, manager_name) values ('${fName}', '${lName}', '${role}', '${manager}');`,
+        function(err, res) {
+            if (err) throw err;
+        }
+    );
+    main();
+}
 
 
 welcome();
@@ -281,7 +339,6 @@ welcome();
 // INSERT INTO employee (first_name, last_name) values ('Dingus', 'Jones');
 
 //   * Update employee roles
-
 
 //old code...
 
