@@ -16,4 +16,4 @@ N/A
 ## Questions
 If you have any questions, please feel free to email me at m.bonnev9@gmail.com or take a look at my github page: https://github.com/mbone1 
 
-![Employee Organizer](screenshot.png)
+![Employee Organizer](screenshot.PNG)
