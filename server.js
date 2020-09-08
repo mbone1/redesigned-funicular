@@ -5,12 +5,8 @@
 
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-
-const chalk = require("chalk");
-const func = require("./func.js")
 const figlet = require('figlet')
-let username = [];
-let username1 = username[0];
+
 
 //setting up mysql server
 var connection = mysql.createConnection({
@@ -33,27 +29,25 @@ connection.connect(function(err) {
     // console.log("connected as id " + connection.threadId);
 });
 
-//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙welcome function, stores user's name and passes on to main function
+//◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙welcome function, just for organization
 function welcome() {
     inquirer
         .prompt([{
             type: "prompt",
-            message: "Hello! Welcome to the employee database... Please enter your name",
-            name: "name",
+            message: "Hello! Welcome to the employee database, please press enter to continue...",
+            name: "nothing",
         }, ])
         .then((answers) => {
-            console.info("Welcome", answers.name, "!");
-            username.push(answers.name)
-            main(answers.name);
+            main();
         });
 }
 
 //◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙main tree of questions
-function main(userName) {
+function main() {
     inquirer
         .prompt([{
             type: "list",
-            message: "what would you like to do " + userName + "?",
+            message: "What would you like to do?",
             choices: [
                 "View all employees",
                 "View all roles",
@@ -306,27 +300,20 @@ function updEmpQ(burrito1, burrito2) {
             let role = x[1];
             console.log(fName)
             console.log(role)
-            func.updRole(fName, role);
+            updRole(fName, role);
 
         });
 }
 
-// figlet.text('Employee Organizer', {
-//     font: 'ogre',
-//     horizontalLayout: 'default',
-//     verticalLayout: 'default',
-//     width: 80,
-//     whitespaceBreak: true
-// }, function(err, data) {
-//     if (err) {
-//         console.log('Something went wrong...');
-//         console.dir(err);
-//         return;
-//     }
-//     console.log(data);
-// });
+//◙◙◙◙◙◙◙function to update employees roles
+function updRole(fName, role) {
+    connection.query(
+        `UPDATE employee SET empRole = '${role}' WHERE first_name = '${fName}';`,
+        function(err, res) {
+            if (err) throw err;
+        }
+    );
+    main();
+}
 
 welcome();
-
-
-// welcome();
