@@ -285,7 +285,7 @@ function updEmpQ(burrito1, burrito2) {
         .prompt([{
                 type: "list",
                 message: "Which employee would you like to update?",
-                name: "update",
+                name: "empName",
                 choices: burrito2,
             },
             {
@@ -297,23 +297,20 @@ function updEmpQ(burrito1, burrito2) {
         ])
         .then((answers) => {
             console.log(answers);
-            // let x = Object.values(answers);
-            // let fName = x[0];
-            // let lName = x[1];
-            // let role = x[2];
-            // let manager = x[3];
-            // console.log(fName);
-            // console.log(lName);
-            // console.log(role);
-            // console.log(manager);
-            // updEmp(fName, lName, role, manager);
+            let x = Object.values(answers);
+            let fName = x[0];
+            let role = x[1];
+            console.log(fName)
+            console.log(role)
+            updRole(fName, role);
+
         });
 }
 
 //◙◙◙◙◙◙◙function to update employees
-function updEmp(fName, lName, role, manager) {
+function updRole(fName, role) {
     connection.query(
-        `INSERT INTO employee (first_name, last_name, empRole, manager_name) values ('${fName}', '${lName}', '${role}', '${manager}');`,
+        `UPDATE employee SET empRole = '${role}' WHERE first_name = '${fName}';`,
         function(err, res) {
             if (err) throw err;
         }
