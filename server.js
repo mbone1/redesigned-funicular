@@ -3,12 +3,14 @@
 //◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮙
 //◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙◙ ⮘
 
-const fs = require("fs");
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const consoletable = require("console.table");
+
 const chalk = require("chalk");
-// const func = require("./func.js")
+const func = require("./func.js")
+const figlet = require('figlet')
+let username = [];
+let username1 = username[0];
 
 //setting up mysql server
 var connection = mysql.createConnection({
@@ -41,6 +43,7 @@ function welcome() {
         }, ])
         .then((answers) => {
             console.info("Welcome", answers.name, "!");
+            username.push(answers.name)
             main(answers.name);
         });
 }
@@ -95,6 +98,7 @@ function viewAllEmp() {
     connection.query("SELECT * FROM employee", function(err, res) {
         if (err) throw err;
         console.table(res);
+        console.log()
         main();
     });
 }
@@ -104,7 +108,7 @@ function viewAllDep() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
         console.table(res);
-        main(userName);
+        main();
     });
 }
 
@@ -113,7 +117,7 @@ function viewAllRoles() {
     connection.query("SELECT * FROM role", function(err, res) {
         if (err) throw err;
         console.table(res);
-        main(userName);
+        main();
     });
 }
 
@@ -302,52 +306,27 @@ function updEmpQ(burrito1, burrito2) {
             let role = x[1];
             console.log(fName)
             console.log(role)
-            updRole(fName, role);
+            func.updRole(fName, role);
 
         });
 }
 
-//◙◙◙◙◙◙◙function to update employees
-function updRole(fName, role) {
-    connection.query(
-        `UPDATE employee SET empRole = '${role}' WHERE first_name = '${fName}';`,
-        function(err, res) {
-            if (err) throw err;
-        }
-    );
-    main();
-}
-
+// figlet.text('Employee Organizer', {
+//     font: 'ogre',
+//     horizontalLayout: 'default',
+//     verticalLayout: 'default',
+//     width: 80,
+//     whitespaceBreak: true
+// }, function(err, data) {
+//     if (err) {
+//         console.log('Something went wrong...');
+//         console.dir(err);
+//         return;
+//     }
+//     console.log(data);
+// });
 
 welcome();
 
-//   * Add departments, roles, employees
 
-//add department -- Nothing needed
-
-// INSERT INTO department (name) values ('Junkers');
-
-//add role -- will need to add department id from department table
-
-// INSERT INTO role (title, salary) values ('Runners', 50000);
-
-//add employee -- will need to add role_id from role table
-
-// INSERT INTO employee (first_name, last_name) values ('Dingus', 'Jones');
-
-//   * Update employee roles
-
-//old code...
-
-// //function to add departments
-// function addDept(dept) {
-//     connection.query(`INSERT INTO department (name) values ('${dept}');`, function(err, res) {
-//         if (err) throw err;
-//         console.log("__________________________________________________________________________")
-//         console.log("________press an arrow key to bring the menu back up______________________")
-//         console.log("__________________________________________________________________________")
-//         console.log("__________________________________________________________________________")
-//         console.log("__________________________________________________________________________")
-//         main();
-//     });
-// }
+// welcome();
